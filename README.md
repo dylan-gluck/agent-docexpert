@@ -1,6 +1,6 @@
 # DocExpert
 
-DocExpert is a collection of AI agent workflows designed to process, index and search technical documentation. It leverages Crawl4AI for web crawling, ChromaDB for local vector storage, and Langchain for semantic search capabilities.
+DocExpert is a collection of AI agent workflows designed to process, index and search technical documentation. It leverages [Crawl4AI](https://github.com/unclecode/crawl4ai) for web crawling, [ChromaDB](https://github.com/chroma-core/chroma) for local vector storage, and [Langchain](https://github.com/langchain-ai/langchain) for semantic search capabilities.
 
 ## Overview
 
@@ -12,26 +12,29 @@ The project aims to make technical documentation more accessible by:
 ## Features
 
 ### Completed
-- [x] Web crawling functionality using Crawl4AI
-- [x] Support for both internal and external link extraction
-- [x] Command line interface with URL and external link options
-- [x] Async crawler implementation for improved performance
+- [x] Project setup using uv
+- [x] CLI argument parsing
+- [x] Scrape initial `links[]`
 
-### Todo
-- [ ] Generate embeddings from crawled content
+### Todo (Indexer)
 - [ ] Set up ChromaDB integration for local vector storage
-- [ ] Implement document chunking and preprocessing
-- [ ] Add Langchain components for semantic search
+- [ ] Batch-crawl `links[]`
+- [ ] Extract/chunk/embed text from HTML
+
+### Todo (Search)
+- [ ] Add Langchain integration for semantic search
 - [ ] Create search API endpoints
 
-## Installation
+---
+
+## Usage
+
+Pull latest:
 
 ```bash
 git clone https://github.com/dylan-gluck/agent-docexpert.git
 cd agent-docexpert
 ```
-
-## Usage
 
 Run the indexer with:
 
@@ -43,11 +46,7 @@ uv run index.py --url https://docs.example.com
 uv run index.py --url https://docs.example.com --external
 ```
 
-## Requirements
-
-- Python ≥ 3.11
-- asyncio ≥ 3.4.3
-- crawl4ai ≥ 0.4.248
+---
 
 ## Contributing
 
@@ -55,4 +54,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the GNU GPLv3 License - see the LICENSE file for details.
