@@ -3,6 +3,9 @@ import argparse
 import chromadb
 from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, MemoryAdaptiveDispatcher, CrawlerMonitor, DisplayMode
 
+def check_db(collection):
+    print(f"Collection has {collection.count()} documents.")
+
 def add_to_collection(result, collection):
     print(f"Indexing {result.url}..")
     collection.add(
@@ -76,6 +79,7 @@ async def main(args):
     # Initialize the database
     client = chromadb.PersistentClient()
     collection = client.get_or_create_collection(name=c)
+    check_db(collection)
 
     # Crawl the starting URL
     print(f"Starting run! Crawling {url}...")
@@ -87,6 +91,7 @@ async def main(args):
 
     # exit
     print(f"Run complete! Crawled {len(urls)} links.")
+    check_db(collection)
 
 
 if __name__ == "__main__":
