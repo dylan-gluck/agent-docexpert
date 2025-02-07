@@ -3,7 +3,7 @@ requires-python = ">=3.11"
 
 [[package]]
 name = "agent-docexpert"
-version = "0.1.0"
+version = "0.0.1"
 source = { virtual = "." }
 dependencies = [
     { name = "argparse" },

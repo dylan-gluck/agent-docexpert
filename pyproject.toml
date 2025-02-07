@@ -1,7 +1,7 @@
 [project]
 name = "agent-docexpert"
 version = "0.0.1"
-description = "Add your description here"
+description = "Technical documentation Q&A agent workflow"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

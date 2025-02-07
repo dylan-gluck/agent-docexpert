@@ -46,10 +46,10 @@ cd agent-docexpert
 Run the indexer with:
 ```bash
 # Basic usage
-uv run index.py --url https://docs.example.com
+uv run crawl.py --url https://docs.example.com
 
 # Include external links in crawl
-uv run index.py --url https://docs.example.com --external
+uv run crawl.py --url https://docs.example.com --external
 ```
 
 ---
