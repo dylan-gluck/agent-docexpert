@@ -15,29 +15,35 @@ The project aims to make technical documentation more accessible by:
 - [x] Project setup using uv
 - [x] CLI argument parsing
 - [x] Scrape initial `links[]`
+- [x] Set up ChromaDB integration for local vector storage
+- [x] Batch-crawl `links[]`
+- [x] Extract/chunk/embed text from HTML
 
 ### Todo (Indexer)
-- [ ] Set up ChromaDB integration for local vector storage
-- [ ] Batch-crawl `links[]`
-- [ ] Extract/chunk/embed text from HTML
+- [ ] Optimize metadata extraction
+- [ ] Optimize URL filtering (remove #hashes, etc.)
+- [ ] Add recursive crawling
 
-### Todo (Search)
-- [ ] Add Langchain integration for semantic search
+### Todo (RAG)
+- [ ] Add Langchain integration for RAG search
 - [ ] Create search API endpoints
 
 ---
 
 ## Usage
 
-Pull latest:
+Dependencies: [uv](https://docs.astral.sh/uv/getting-started/installation/)
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
+Pull latest:
 ```bash
 git clone https://github.com/dylan-gluck/agent-docexpert.git
 cd agent-docexpert
 ```
 
 Run the indexer with:
-
 ```bash
 # Basic usage
 uv run index.py --url https://docs.example.com
