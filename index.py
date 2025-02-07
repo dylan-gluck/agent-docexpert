@@ -1,15 +1,18 @@
 import asyncio
 import argparse
-from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode, MemoryAdaptiveDispatcher, CrawlerMonitor, DisplayMode
+import chromadb
+from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, MemoryAdaptiveDispatcher, CrawlerMonitor, DisplayMode
 
-async def crawl_batch(urls):
-    browser_config = BrowserConfig(headless=True, verbose=False)
-
-    run_config = CrawlerRunConfig(
-        cache_mode=CacheMode.BYPASS,
-        stream=True  # Enable streaming mode
+def add_to_collection(result, collection):
+    print(f"Indexing {result.url}..")
+    collection.add(
+        documents=[result.markdown],
+        ids=[result.url]
     )
 
+async def crawl_batch(urls, collection):
+    browser_config = BrowserConfig(headless=True, verbose=False)
+    run_config = CrawlerRunConfig(stream=True)
     dispatcher = MemoryAdaptiveDispatcher(
         memory_threshold_percent=70.0,
         check_interval=1.0,
@@ -20,53 +23,76 @@ async def crawl_batch(urls):
     )
 
     async with AsyncWebCrawler(config=browser_config) as crawler:
-        # Process results as they become available
         async for result in await crawler.arun_many(
             urls=urls,
             config=run_config,
             dispatcher=dispatcher
         ):
             if result.success:
-                # Process each result immediately
-                print(f"Successfully crawled {result.url}")
-            else:
-                print(f"Failed to crawl {result.url}: {result.error_message}")
+                add_to_collection(result, collection)
 
+async def crawl(url):
+    browser_config = BrowserConfig(headless=True, verbose=False)
 
-async def main(url, external):
-    links = []
-    print(f"Starting run! Crawling {url}...")
-    async with AsyncWebCrawler() as crawler:
+    async with AsyncWebCrawler(config=browser_config) as crawler:
         result = await crawler.arun(url)
-        if result.success:
-            internal_links = result.links.get("internal", [])
-            external_links = result.links.get("external", [])
+        return result
 
-            print(f"Found {len(internal_links)} internal links.")
-            print(f"Found {len(external_links)} external links.")
+async def get_links(result, external=False):
+    urls = []
 
-            if internal_links:
-                for link in internal_links:
-                    href = link.get("href")
-                    if href not in links:
-                        links.append(href)
-                print(f"Added {len(internal_links)} links to the list.")
+    if result.success:
+        internal_links = result.links.get("internal", [])
+        external_links = result.links.get("external", [])
 
-            if external_links and external:
-                for link in external_links:
-                    href = link.get("href")
-                    if href not in links:
-                        links.append(href)
-                print(f"Added {len(external_links)} external links to the list.")
+        print(f"Found {len(internal_links)} internal links.")
+        print(f"Found {len(external_links)} external links.")
 
-            await crawl_batch([links[0], links[1]])
+        if internal_links:
+            for link in internal_links:
+                href = link.get("href")
+                if href not in urls:
+                    urls.append(href)
+            print(f"Added {len(internal_links)} links to the list.")
 
-        else:
-            print("Crawl failed:", result.error_message)
+        if external_links and external:
+            for link in external_links:
+                href = link.get("href")
+                if href not in urls:
+                    urls.append(href)
+            print(f"Added {len(external_links)} external links to the list.")
+
+        return urls
+    else:
+        print("Crawl failed:", result.error_message)
+        return urls
+
+async def main(args):
+    # Parse the arguments
+    url = args.url
+    c = args.collection
+    etx = args.external
+
+    # Initialize the database
+    client = chromadb.PersistentClient()
+    collection = client.get_or_create_collection(name=c)
+
+    # Crawl the starting URL
+    print(f"Starting run! Crawling {url}...")
+    result = await crawl(url)
+    urls = await get_links(result, etx)
+
+    # Batch Crawl the links found on the starting URL
+    await crawl_batch(urls, collection)
+
+    # exit
+    print(f"Run complete! Crawled {len(urls)} links.")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--url", type=str, required=True, help="URL to crawl")
-    parser.add_argument("--external", help="Include external links", action="store_true")
+    parser.add_argument("--url", type=str, required=True, help="url to crawl")
+    parser.add_argument("--collection", type=str, help="chromadb collection id", default="docexpert")
+    parser.add_argument("--external", help="include external links", action="store_true")
     args = parser.parse_args()
-    asyncio.run(main(args.url, args.external))
+    asyncio.run(main(args))
