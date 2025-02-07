@@ -11,28 +11,29 @@ The project aims to make technical documentation more accessible by:
 
 <details>
     <summary>🧜‍♀️ Workflow Diagram</summary>
-    ```mermaid
-    flowchart TD
-        A[Start] --> B[CLI Input]
-        B -->|--url parameter| C[Initial URL Scraping]
-        C --> D[Extract Initial Links]
-        D --> E{External Links?}
-        E -->|--external flag| F[Include External URLs]
-        E -->|no flag| G[Filter Internal URLs]
-        F --> H[Batch Crawling]
-        G --> H
-        H --> I[HTML Processing]
-        I --> J[Text Extraction]
-        J --> K[Text Chunking]
-        K --> L[Generate Embeddings]
-        L --> M[(ChromaDB Vector Storage)]
-        M --> N{Search Request}
-        N -->|Planned| O[Langchain RAG]
-        O --> P[Search Results]
-        P --> Q[End]
 
-        style O stroke-dasharray: 5 5
-        style P stroke-dasharray: 5 5
+    ```mermaid
+        flowchart TD
+            A[Start] --> B[CLI Input]
+            B -->|--url parameter| C[Initial URL Scraping]
+            C --> D[Extract Initial Links]
+            D --> E{External Links?}
+            E -->|--external flag| F[Include External URLs]
+            E -->|no flag| G[Filter Internal URLs]
+            F --> H[Batch Crawling]
+            G --> H
+            H --> I[HTML Processing]
+            I --> J[Text Extraction]
+            J --> K[Text Chunking]
+            K --> L[Generate Embeddings]
+            L --> M[(ChromaDB Vector Storage)]
+            M --> N{Search Request}
+            N -->|Planned| O[Langchain RAG]
+            O --> P[Search Results]
+            P --> Q[End]
+
+            style O stroke-dasharray: 5 5
+            style P stroke-dasharray: 5 5
     ```
 </details>
 
